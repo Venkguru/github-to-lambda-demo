@@ -1,0 +1,23 @@
+version: 0.2
+phases:
+  install:
+    #If you use the Ubuntu standard image 2.0 or later, you must specify runtime-versions.
+    #If you specify runtime-versions and use an image other than Ubuntu standard image 2.0, the build fails.
+  runtime-versions:
+       python: 3.8
+       commands:
+        - echo "Installation dependencies"
+        - pip install -r requirements.txt -t lib
+  build:
+    commands:
+      - echo "zipping deployment packages.."
+      - cd lib
+      - zip -r9 ../deployment_package.zip,
+      - cd ..
+      - zip -g deployment_package.zip lambda_fucntion.py
+  post_build:
+    commands:
+      - echo "Updating lambda function"
+      - aws lambda update-function-code --function-name github-to-lambda-demo --zip-file fileb://deployment_package.zip
+      - echo "DONE!!"
+
